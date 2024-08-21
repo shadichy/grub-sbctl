@@ -1,0 +1,14 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Path
+Target = */vmlinuz
+Target = grub
+Target = sbctl
+
+[Action]
+Description = Signing kernel and Grub for Secure Boot...
+When = PostTransaction
+Exec = /usr/bin/bash /usr/bin/grub-sbctl-sign
+Depends = sbsigntools
+Depends = grep

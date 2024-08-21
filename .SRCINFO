@@ -1,0 +1,20 @@
+pkgbase = grub-secureboot-scripts
+	pkgdesc = Grub SecureBoot scripts to setup and enable SecureBoot using sbctl fully automatic
+	pkgver = 0.0.1
+	pkgrel = 1
+	url = https://github.com/shadichy/grub-sbctl
+	arch = any
+	license = GPL
+	depends = grub
+	depends = sbctl
+	depends = bash
+	source = gsb.conf
+	source = grub-sbctl-sign
+	source = setup.sh
+	source = 91-sign-grub.hook
+	sha512sums = e3709a442783e7d5a93f46b055b2b0db7cdd724e159a3354bc4403b975d7c2d57f174f778ffe10b9fcfea9a3e837c269874cf751b619b5b20d21697f12374a5a
+	sha512sums = 2f61539475c65eff8b39e2813f8c932738f1ed5c4c8e4837c180f249522f690780b13957b2b02998c7e35751a4a48bcec4dfebdffbb4f3b7a6186d6de4e92f9d
+	sha512sums = 65b093f48f6691933c4b5001462c21b8f746829abc6737634d3dbe75de778e06e049de6fc81c984b09713ddbc4847e1e3abf0b5d742494fc2b89f35c0dd054b6
+	sha512sums = 27bf0637e6c58bee0fadaa5a31074dac0b9aa830ae2bf369174c17388363947ba6936af71dea0d05eeab004419cf1cdb0870ac3c141a7bcd360cd687e610b977
+
+pkgname = grub-secureboot-scripts

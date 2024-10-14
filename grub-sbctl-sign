@@ -1,13 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 [ $EUID = 0 ] || exit 1
 
+# shellcheck disable=SC1091
 source /etc/gsb.conf
 
-grub-mkconfig -o $GRUB_CONFDIR/grub.cfg
+grub-mkconfig -o "$GRUB_CONFDIR/grub.cfg"
 
-for f in $(find $BL_PATH -mindepth 2 -maxdepth 2 -type f -iname "grub*.efi" | head -1) /boot/vmlinu[xz]-* /boot/kernel-*; do
-	[ -f $f ] || continue 
-	cmd_out=$(sbctl verify $f)
+	# shellcheck disable=SC2181
+for f in $(find "$BL_PATH" -mindepth 2 -maxdepth 2 -type f -iname "grub*.efi" | head -1) /boot/vmlinu[xz]-* /boot/kernel-*; do
+	[ -f "$f" ] || continue
+	cmd_out=$(sbctl verify "$f")
 	if [ $? == 0 ]; then
 		case $cmd_out in
 		*"not signed") ;;
@@ -15,14 +17,14 @@ for f in $(find $BL_PATH -mindepth 2 -maxdepth 2 -type f -iname "grub*.efi" | he
 		esac
 	fi
 	echo "Signing $f..."
-	sbctl sign -s $f
+	sbctl sign -s "$f"
 done
 
-for f in $(find $BL_PATH -type f | grep -Ev "\.(efi|sig)"); do
+for f in $(find "$BL_PATH" -type f | grep -Ev "\.(efi|sig)"); do
 	if [ -f "${f}.sig" ]; then
-		gpg --homedir $GRUB_KEYDIR --verify "${f}.sig" 2>/dev/null && continue
+		gpg --homedir "$GRUB_KEYDIR" --verify "${f}.sig" 2>/dev/null && continue
 		rm -f "${f}.sig"
 	fi
 	echo "Signing $f..."
-	gpg --homedir $GRUB_KEYDIR --detach-sign $f 2>/dev/null
+	gpg --homedir "$GRUB_KEYDIR" --detach-sign "$f" 2>/dev/null
 done

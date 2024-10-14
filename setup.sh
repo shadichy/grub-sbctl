@@ -5,7 +5,7 @@ if [ $EUID != 0 ]; then
 	exit 1
 fi
 
-if { sbctl status | grep -E 'Setup Mode:.+Enabled'; }; then
+if ! { sbctl status | grep -Eq 'Setup Mode:.+Enabled'; }; then
 	echo "Setup Mode is not enabled!"
 	exit 1
 fi

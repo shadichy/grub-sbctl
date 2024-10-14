@@ -31,7 +31,7 @@ grub-install \
 	--target="${target}-efi" \
 	--efi-directory="$(dirname "$BL_PATH")" \
 	--bootloader-id="$bl_id" \
-	--boot-directory="$GRUB_CONFDIR" \
+	--boot-directory="$(dirname "$GRUB_CONFDIR")" \
 	--force \
 	--modules="$GRUB_MODULES" \
 	--pubkey="$GRUB_KEYDIR/boot.key" \

@@ -13,11 +13,12 @@ fi
 # shellcheck disable=SC1091
 source /etc/gsb.conf
 
-mkdir --mode 0700 "$GRUB_KEYDIR"
+# shellcheck disable=SC2174
+mkdir --mode 0700 -p "$GRUB_KEYDIR"
 gpg --homedir "$GRUB_KEYDIR" --gen-key
 gpg --homedir "$GRUB_KEYDIR" --export >"$GRUB_KEYDIR/boot.key"
 
-target=$(uname -r)
+target=$(uname -m)
 case "$target" in
 i?86 | x86) target="i386" ;;
 aarch64 | arm64) target="arm64" ;;

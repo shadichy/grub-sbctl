@@ -1,12 +1,30 @@
 #!/bin/bash
-[ $EUID = 0 ] || exit 1
 
+set -euo pipefail
+
+# Ensure the script is run as root
+if [ $EUID != 0 ]; then
+	echo "Insufficient permission!"
+	echo "Please run this script as root"
+	exit 1
+fi
+
+# Source configuration file(s)
 # shellcheck disable=SC1091
-source /etc/gsb.conf
+if [ -f /etc/gsb.conf ]; then
+	source /etc/gsb.conf
+	if [ -f /etc/gsb.user.conf ]; then
+		source /etc/gsb.user.conf
+	fi
+else
+	source gsb.conf # For debugging purposes
+fi
 
+# Generate GRUB config
 grub-mkconfig -o "$GRUB_CONFDIR/grub.cfg"
 
-	# shellcheck disable=SC2181
+# Sign EFI binaries and kernel images with sbctl
+# shellcheck disable=SC2181
 for f in $(find "$BL_PATH" -mindepth 2 -maxdepth 2 -type f -iname "grub*.efi" | head -1) /boot/vmlinu[xz]-* /boot/kernel-*; do
 	[ -f "$f" ] || continue
 	cmd_out=$(sbctl verify "$f")
@@ -20,6 +38,7 @@ for f in $(find "$BL_PATH" -mindepth 2 -maxdepth 2 -type f -iname "grub*.efi" | 
 	sbctl sign -s "$f"
 done
 
+# Sign GRUB files and modules with gpg
 for f in $(find "$BL_PATH" -type f | grep -Ev "\.(efi|sig)"); do
 	if [ -f "${f}.sig" ]; then
 		gpg --homedir "$GRUB_KEYDIR" --verify "${f}.sig" 2>/dev/null && continue

@@ -1,7 +1,7 @@
 pkgbase = grub-secureboot-scripts
 	pkgdesc = GRUB SecureBoot scripts to setup SecureBoot using sbctl with automatic signing of GRUB files and kernel images
 	pkgver = 0.0.2
-	pkgrel = 5
+	pkgrel = 6
 	url = https://github.com/shadichy/grub-sbctl
 	arch = any
 	license = GPLv3
@@ -14,7 +14,7 @@ pkgbase = grub-secureboot-scripts
 	source = 91-sign-grub.hook
 	source = grub-sbctl-setup-completion
 	sha512sums = 40e0388f1e2de0eb5f5f67c3eb0853c51463c946c6aecd75bc91649f51610992a4fc3cadf76f852bf40d80f06e735a56a174d19eeb3cf449c6cc19b7dc1fc84c
-	sha512sums = 733d4cd80ad1eb8354c31c8a62d5c32fbabe8da4c1c0824ce8f89dd38066648f43a1cfc6c0d1dcb679fc1f9b1a1185129a79b4fa2e6ebfcf0f7aa313c35fcbb4
+	sha512sums = bcf77f5daab5deda84447fd72ac871d295174a3989a87eb06cf5ce15910033e2d8d69ff6c06981019a78748448d87b1ca0788def8d9532abf8a1cd396ccca5ca
 	sha512sums = dd9e64862e6f29df9c42425f25af8f7aa5def25edf29f29a59322c97f8c466895f2bce73659a54d887fdf00fc5b591ea8a9c48334c174d2826f776beceb33851
 	sha512sums = b3611b9c6fd99f89612c17468b011aa52716bd61dcf23e547516d633d0f1ce499b272007fa2f04813baf82dc08f4653a99907a59d906ff1c1937418181ccf2a2
 	sha512sums = f2eb1166e65d5e1809949be154e80a1240f0f9e043600e212ccaf40c7aee1dfc23afffe18ea192e3d62dbb229dbd0995261563ea79cf886eed32351b69565d37

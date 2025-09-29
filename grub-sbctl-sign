@@ -20,6 +20,12 @@ else
 	source gsb.conf # For debugging purposes
 fi
 
+# Check for key existence
+if [ ! -f "$GRUB_KEYDIR/boot.key" ]; then
+	echo "grub-sbctl is not set up. Skipping..."
+	exit 0
+fi
+
 sign_efi() {
 	# Sign EFI binaries and kernel images with sbctl
 	# shellcheck disable=SC2181

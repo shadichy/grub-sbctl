@@ -20,30 +20,33 @@ else
 	source gsb.conf # For debugging purposes
 fi
 
-# Generate GRUB config
-grub-mkconfig -o "$GRUB_CONFDIR/grub.cfg"
+sign_efi() {
+	# Sign EFI binaries and kernel images with sbctl
+	# shellcheck disable=SC2181
+	for f in $(find "$BL_PATH" -mindepth 2 -maxdepth 2 -type f -iname "grub*.efi" | head -1) /boot/vmlinu[xz]-* /boot/kernel-*; do
+		[ -f "$f" ] || continue
+		sbctl sign -s "$(realpath "$f")"
+		# Add a little delay while sbctl updates its database
+		sleep 1
+	done
+}
 
-# Sign EFI binaries and kernel images with sbctl
-# shellcheck disable=SC2181
-for f in $(find "$BL_PATH" -mindepth 2 -maxdepth 2 -type f -iname "grub*.efi" | head -1) /boot/vmlinu[xz]-* /boot/kernel-*; do
-	[ -f "$f" ] || continue
-	cmd_out=$(sbctl verify "$f")
-	if [ $? == 0 ]; then
-		case $cmd_out in
-		*"not signed") ;;
-		*) continue ;;
-		esac
-	fi
-	echo "Signing $f..."
-	sbctl sign -s "$f"
-done
+update_grub() {
 
-# Sign GRUB files and modules with gpg
-for f in $(find "$BL_PATH" -type f | grep -Ev "\.(efi|sig)"); do
-	if [ -f "${f}.sig" ]; then
-		gpg --homedir "$GRUB_KEYDIR" --verify "${f}.sig" 2>/dev/null && continue
-		rm -f "${f}.sig"
-	fi
-	echo "Signing $f..."
-	gpg --homedir "$GRUB_KEYDIR" --detach-sign "$f" 2>/dev/null
-done
+	# Generate GRUB config
+	grub-mkconfig -o "$GRUB_CONFDIR/grub.cfg"
+
+	# Sign GRUB files and modules with gpg
+	for f in $(find "$BL_PATH" -type f | grep -Ev '\.(efi|sig)') $(find "$GRUB_CONFDIR" -type f | grep -Ev '\.sig'); do
+		if [ -f "${f}.sig" ]; then
+			gpg --homedir "$GRUB_KEYDIR" --verify "${f}.sig" 2>/dev/null && continue
+			rm -f "${f}.sig"
+		fi
+		echo "Signing $f..."
+		gpg --homedir "$GRUB_KEYDIR" --detach-sign "$f" 2>/dev/null
+	done
+}
+
+sign_efi &
+update_grub
+wait

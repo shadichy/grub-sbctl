@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Bash completion for grub-sbctl setup.sh
+_setup_sh_flags="--install-sbctl --grub-keydir --bootloader-path --grub-confdir --grub-modules --grub-bootloader-id --target --dry-run --write-config --verbose --help"
+
+_setup_sh_complete() {
+	local cur prev opts
+	COMPREPLY=()
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	prev="${COMP_WORDS[COMP_CWORD - 1]}"
+	opts="$_setup_sh_flags"
+
+	if [[ $cur == -* ]]; then
+		COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+		return 0
+	fi
+}
+complete -F _setup_sh_complete setup.sh
+
+# Zsh completion wrapper
+if [[ -n $ZSH_VERSION ]]; then
+	autoload -U +X bashcompinit && bashcompinit
+fi

@@ -149,9 +149,14 @@ EOF
 	shift
 done
 
+# PATH for debugging
+if [ "$GRUB_VERBOSE" ]; then
+	export PATH=$(pwd):$PATH
+fi
+
 main() {
 	# Autodetect architecture if not specified
-	if [ ! "$TARGET" ]; then
+	if [ ! "${TARGET:=}" ]; then
 		TARGET=$(uname -m)
 		case "$TARGET" in
 		i?86 | x86) TARGET="i386" ;;
@@ -161,12 +166,12 @@ main() {
 	fi
 
 	# Autodetect bootloader id if not specified
-	if [ ! "$BL_ID" ]; then
+	if [ ! "${BL_ID:=}" ]; then
 		BL_ID=$(basename "$(dirname "$(find "$BL_PATH" -mindepth 2 -maxdepth 2 -type f -iname "grub*.efi" | head -1)")")
 	fi
 
 	# Write user configuration
-	if [ "$CONFIG_OVERRIDE" = true ]; then
+	if "${CONFIG_OVERRIDE:=false}"; then
 		cat <<EOF >/etc/gsb.user.conf
 GRUB_KEYDIR="$GRUB_KEYDIR"
 BL_PATH="$BL_PATH"
@@ -178,7 +183,7 @@ EOF
 	fi
 
 	# Exit if dry run
-	if [ "$DRY_RUN" = true ]; then
+	if "${DRY_RUN:=false}"; then
 		echo "Dry run enabled, exiting before making any changes." >&2
 		exit 0
 	fi
@@ -189,8 +194,39 @@ EOF
 		echo "Creating new local gpg key for GRUB signing..." >&2
 		echo "Note: Create a password to enhance security." >&2
 		echo "      Leave passwordless (empty) is recommended for convenience." >&2
+
+		# Get machine data for gpg key
+		local dmi_id_dir=/sys/devices/virtual/dmi/id product_name product_version product_serial
+		product_name=$(<"$dmi_id_dir/product_name")
+		product_version=$(<"$dmi_id_dir/product_version")
+		product_serial=$(<"$dmi_id_dir/product_serial")
+
+		# Prompt for key password
+		local password retyped_password
+		read -r -s -p "Password: " password
+		echo
+		read -r -s -p "Retype Password: " retyped_password
+		echo
+		if [ "$password" != "$retyped_password" ]; then
+			echo "Passwords do not match!" >&2
+			exit 1
+		fi
+
+		# Generate gpg key non-interactively
 		mkdir --mode 0700 -p "$GRUB_KEYDIR"
-		gpg $GPG_VERBOSE --homedir "$GRUB_KEYDIR" --gen-key
+		gpg $GPG_VERBOSE --homedir "$GRUB_KEYDIR" --gen-key --batch <<EOF
+Key-Type: RSA
+Key-Length: 4096
+Subkey-Type: RSA
+Subkey-Length: 4096
+Name-Real: $product_name
+Name-Comment: $product_version
+Name-Email: $product_serial@$(hostname).localdomain
+Expire-Date: 0
+Passphrase: $password
+%no-protection
+%commit
+EOF
 		gpg $GPG_VERBOSE --homedir "$GRUB_KEYDIR" --export >"$GRUB_KEYDIR/boot.key"
 	fi
 
@@ -206,7 +242,7 @@ EOF
 		sbctl $SBCTL_VERBOSE create-keys || :
 
 		# Enroll keys in the system firmware
-		sbctl $SBCTL_VERBOSE enroll-keys -fma
+		sbctl $SBCTL_VERBOSE enroll-keys -ma
 	fi
 
 	# (Re)install GRUB bootloader

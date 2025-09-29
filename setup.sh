@@ -231,7 +231,7 @@ EOF
 	fi
 
 	# Install sbctl keys if requested
-	if [ "$INSTALL_SBCTL" = true ]; then
+	if "${INSTALL_SBCTL_KEYS:=false}"; then
 		if ! { sbctl status | grep -Eq 'Setup Mode:.+Enabled'; }; then
 			echo "Setup Mode is not enabled! Cannot proceed with sbctl key installation." >&2
 			echo "Go to your BIOS/uEFI firmware settings, disable SecureBoot and enable Setup Mode (some brands require wiping current SecureBoot keys)." >&2

@@ -34,16 +34,16 @@ while [ $# -gt 0 ]; do
 		cat <<EOF
 Usage: $0 [OPTIONS]
 
-Options:	
-	--install-sbctl						Install sbctl SecureBoot key if not already installed
-	--grub-keydir PATH				Directory to store GRUB gpg keys
-	--bootloader-path PATH		Path to the EFI System Partition's bootloader
-	--grub-confdir PATH				Directory for GRUB configuration files (where grub.cfg is located)
-	--grub-modules MODULES		GRUB modules to include
-	--grub-bootloader-id ID		GRUB bootloader ID (default: auto-detected)
-	--target TARGET						Target architecture (i386, x86_64, arm, arm64; default: auto-detected)
-	--write-config						Write your custom configuration (/etc/gsb.user.conf)
-	--help 										Show this help message and exit
+Options:  
+  --install-sbctl           Install sbctl SecureBoot key if not already installed
+  --grub-keydir PATH        Directory to store GRUB gpg keys
+  --bootloader-path PATH    Path to the EFI System Partition's bootloader
+  --grub-confdir PATH       Directory for GRUB configuration files (where grub.cfg is located)
+  --grub-modules MODULES    GRUB modules to include
+  --grub-bootloader-id ID   GRUB bootloader ID (default: auto-detected)
+  --target TARGET           Target architecture (i386, x86_64, arm, arm64; default: auto-detected)
+  --write-config            Write your custom configuration (/etc/gsb.user.conf)
+  --help                    Show this help message and exit
 
 Default values for GRUB keydir, confdir and modules are specified in /etc/gsb.conf.
 EOF

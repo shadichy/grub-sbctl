@@ -11,13 +11,15 @@ fi
 
 # Source configuration file(s)
 # shellcheck disable=SC1091
-if [ -f /etc/gsb.conf ]; then
-	source /etc/gsb.conf
-	if [ -f /etc/gsb.user.conf ]; then
-		source /etc/gsb.user.conf
+if "${_RUN_FROM_SETUP:=false}"; then
+	if [ -f /etc/gsb.conf ]; then
+		source /etc/gsb.conf
+		if [ -f /etc/gsb.user.conf ]; then
+			source /etc/gsb.user.conf
+		fi
+	else
+		source gsb.conf # For debugging purposes
 	fi
-else
-	source gsb.conf # For debugging purposes
 fi
 
 # Check for key existence

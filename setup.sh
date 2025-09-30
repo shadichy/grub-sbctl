@@ -231,7 +231,7 @@ EOF
 	fi
 
 	# Install sbctl keys if requested
-	if "${INSTALL_SBCTL_KEYS:=false}"; then
+	if "${INSTALL_SBCTL:=false}"; then
 		if ! { sbctl status | grep -Eq 'Setup Mode:.+Enabled'; }; then
 			echo "Setup Mode is not enabled! Cannot proceed with sbctl key installation." >&2
 			echo "Go to your BIOS/uEFI firmware settings, disable SecureBoot and enable Setup Mode (some brands require wiping current SecureBoot keys)." >&2
@@ -261,7 +261,8 @@ EOF
 
 	# Sign GRUB files and modules
 	# Output must be shown regardless of verbosity level
-	grub-sbctl-sign >&2
+	export GRUB_CONFDIR GRUB_KEYDIR BL_PATH
+	env _RUN_FROM_SETUP=true grub-sbctl-sign >&2
 
 	echo "Setup completed." >&2
 }

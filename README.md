@@ -17,6 +17,21 @@ pamac install grub-secureboot-scripts
 # or any aur helper you got
 ```
 
+## Quick start
+
+Before start, make sure:
+- **UEFI** is **enabled**
+- **CSM** ***(Compatibility Support Module)*** is **off**
+- **SecureBoot** is either **off** and must be in **Setup Mode** or **on** if you already enrolled keys using `sbctl` before
+
+Setup secureboot:
+
+```sh
+/usr/share/grub/sbctl/setup.sh --install-sbctl --write-config
+# Or with sbctl already set up
+/usr/share/grub/sbctl/setup.sh --write-config
+```
+
 ## Configuration
 
 These are configurations of grub-secureboot-scripts in `/etc/gsb.conf`
